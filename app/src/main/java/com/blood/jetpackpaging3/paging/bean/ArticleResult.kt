@@ -1,4 +1,4 @@
-package com.blood.jetpackpaging3.paging
+package com.blood.jetpackpaging3.paging.bean
 
 /*
  *  @项目名：  JetpackPaging3 

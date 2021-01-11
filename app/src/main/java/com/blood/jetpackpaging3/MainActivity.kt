@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.blood.jetpackpaging3.differ.AsyncListDifferActivity
-import com.blood.jetpackpaging3.paging.Paging3Activity
+import com.blood.jetpackpaging3.paging.ui.Paging3Activity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,9 +1,8 @@
-package com.blood.jetpackpaging3.paging
+package com.blood.jetpackpaging3.paging.net
 
-import kotlinx.coroutines.Deferred
+import com.blood.jetpackpaging3.paging.bean.ArticleResult
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -35,7 +34,6 @@ interface NetApi {
             return Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .client(client)
-//                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(NetApi::class.java)

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.blood.jetpackpaging3">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.JetpackPaging3">
-        <activity android:name=".paging.Paging3Activity"></activity>
+        <activity android:name=".paging.ui.Paging3Activity" />
         <activity android:name=".differ.AsyncListDifferActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

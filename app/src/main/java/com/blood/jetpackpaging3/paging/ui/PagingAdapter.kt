@@ -1,4 +1,4 @@
-package com.blood.jetpackpaging3.paging
+package com.blood.jetpackpaging3.paging.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.blood.jetpackpaging3.R
 import com.blood.jetpackpaging3.databinding.LayoutItemArticleBinding
+import com.blood.jetpackpaging3.paging.bean.DataX
 import java.text.DateFormat
 
 

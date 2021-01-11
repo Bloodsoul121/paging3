@@ -9,6 +9,8 @@ package com.blood.jetpackpaging3.test;
  *  @描述：    TODO
  */
 
+import com.blood.jetpackpaging3.paging.bean.Tag;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,11 @@ public class JavaTest {
 
         System.out.println("result " + (temp == list1));
         System.out.println("result " + (list1 == list2));
+
+        Tag tag1 = new Tag("name", "url");
+        Tag tag2 = new Tag("name", "url");
+        System.out.println("result " + (tag1.equals(tag2)));
+        System.out.println("result " + (tag1 == tag2));
     }
 
 }
