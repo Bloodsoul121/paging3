@@ -6,36 +6,35 @@ import androidx.paging.*
 import com.blood.jetpackpaging3.paging.bean.DataX
 import com.blood.jetpackpaging3.paging.net.NetApi
 
-/*
- *  @项目名：  JetpackPaging3 
- *  @包名：    com.blood.jetpackpaging3.paging
- *  @文件名:   PagingViewModel
- *  @创建者:   bloodsoul
- *  @创建时间:  2021/1/3 17:02
- *  @描述：    TODO
- */
 class PagingViewModel : ViewModel() {
+
+    companion object {
+        const val PAGE_SIZE = 20
+    }
 
     val netApi = NetApi.create()
 
     @OptIn(ExperimentalPagingApi::class)
     val articleList = Pager(
         PagingConfig(
-            pageSize = 30,
+            pageSize = PAGE_SIZE,
             prefetchDistance = 5,
             enablePlaceholders = false,
-            initialLoadSize = 30
+            initialLoadSize = PAGE_SIZE
         ),
         initialKey = 0,
-        remoteMediator = object : RemoteMediator<Int, DataX>() {
-            override suspend fun load(
-                loadType: LoadType,
-                state: PagingState<Int, DataX>
-            ): MediatorResult {
-                Log.d("blood", "remoteMediator load: $loadType $state")
-                return MediatorResult.Success(false)
-            }
-        },
+//        remoteMediator = object : RemoteMediator<Int, DataX>() {
+//            override suspend fun load(
+//                loadType: LoadType,
+//                state: PagingState<Int, DataX>
+//            ): MediatorResult {
+//                Log.d(
+//                    "blood",
+//                    "remoteMediator load: $loadType ${state.anchorPosition} ${state.pages.size}"
+//                )
+//                return MediatorResult.Success(false)
+//            }
+//        },
         pagingSourceFactory = {
             object : PagingSource<Int, DataX>() {
                 override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DataX> {

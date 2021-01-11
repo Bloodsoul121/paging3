@@ -11,7 +11,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.blood.jetpackpaging3.R
 import com.blood.jetpackpaging3.databinding.ActivityPaging3Binding
 import com.blood.jetpackpaging3.paging.viewmodel.PagingViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 
 class Paging3Activity : AppCompatActivity() {
 
@@ -25,7 +29,8 @@ class Paging3Activity : AppCompatActivity() {
 
         adapter = PagingAdapter()
         binding.rv.layoutManager = LinearLayoutManager(this)
-        binding.rv.adapter = adapter
+        binding.rv.adapter = adapter.withLoadStateFooter(LiveLoadStateAdapter(adapter::retry))
+        binding.rv.setHasFixedSize(true)
 
         adapter.addLoadStateListener {
             when (it.refresh) {
@@ -52,6 +57,13 @@ class Paging3Activity : AppCompatActivity() {
             viewModel.articleList.collectLatest {
                 adapter.submitData(it)
             }
+        }
+
+        lifecycleScope.launch {
+            adapter.loadStateFlow
+                .distinctUntilChangedBy { it.refresh }
+                .filter { it.refresh is LoadState.NotLoading }
+                .collect { binding.rv.scrollToPosition(0) }
         }
     }
 
