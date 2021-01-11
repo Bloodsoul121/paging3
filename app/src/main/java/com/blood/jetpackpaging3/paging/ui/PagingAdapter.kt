@@ -11,15 +11,6 @@ import com.blood.jetpackpaging3.databinding.LayoutItemArticleBinding
 import com.blood.jetpackpaging3.paging.bean.DataX
 import java.text.DateFormat
 
-
-/*
- *  @项目名：  JetpackPaging3 
- *  @包名：    com.blood.jetpackpaging3.paging
- *  @文件名:   PagingAdapter
- *  @创建者:   bloodsoul
- *  @创建时间:  2021/1/3 17:32
- *  @描述：    TODO
- */
 class PagingAdapter : PagingDataAdapter<DataX, PagingAdapter.ViewHolder>(ARTICLE_COMPARATOR) {
 
     companion object {
@@ -36,9 +27,9 @@ class PagingAdapter : PagingDataAdapter<DataX, PagingAdapter.ViewHolder>(ARTICLE
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = getItem(position)
+        holder.binding.position.text = position.toString()
         holder.binding.title.text = data?.title
         holder.binding.shareDate.text = DateFormat.getDateInstance().format(data?.shareDate)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

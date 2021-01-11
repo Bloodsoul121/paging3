@@ -33,11 +33,11 @@ class Paging3Activity : AppCompatActivity() {
         binding.rv.setHasFixedSize(true)
 
         adapter.addLoadStateListener {
-            when (it.refresh) {
-                is LoadState.Loading -> log("refresh Loading")
-                is LoadState.NotLoading -> log("refresh NotLoading")
-                is LoadState.Error -> log("refresh Error")
-            }
+//            when (it.refresh) {
+//                is LoadState.Loading -> log("refresh Loading")
+//                is LoadState.NotLoading -> log("refresh NotLoading")
+//                is LoadState.Error -> log("refresh Error")
+//            }
             when (it.append) {
                 is LoadState.Loading -> log("append Loading")
                 is LoadState.NotLoading -> log("append NotLoading")
@@ -54,7 +54,10 @@ class Paging3Activity : AppCompatActivity() {
 //        })
 
         lifecycleScope.launchWhenCreated {
-            viewModel.articleList.collectLatest {
+//            viewModel.getPager().collectLatest {
+//                adapter.submitData(it)
+//            }
+            viewModel.getPagerByRemote().collectLatest {
                 adapter.submitData(it)
             }
         }

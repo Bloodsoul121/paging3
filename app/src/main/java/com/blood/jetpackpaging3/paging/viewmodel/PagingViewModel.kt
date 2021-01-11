@@ -3,7 +3,9 @@ package com.blood.jetpackpaging3.paging.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.paging.*
+import androidx.room.withTransaction
 import com.blood.jetpackpaging3.paging.bean.DataX
+import com.blood.jetpackpaging3.paging.db.AppDatabase
 import com.blood.jetpackpaging3.paging.net.NetApi
 
 class PagingViewModel : ViewModel() {
@@ -15,7 +17,7 @@ class PagingViewModel : ViewModel() {
     val netApi = NetApi.create()
 
     @OptIn(ExperimentalPagingApi::class)
-    val articleList = Pager(
+    fun getPager() = Pager(
         PagingConfig(
             pageSize = PAGE_SIZE,
             prefetchDistance = 5,
@@ -23,18 +25,6 @@ class PagingViewModel : ViewModel() {
             initialLoadSize = PAGE_SIZE
         ),
         initialKey = 0,
-//        remoteMediator = object : RemoteMediator<Int, DataX>() {
-//            override suspend fun load(
-//                loadType: LoadType,
-//                state: PagingState<Int, DataX>
-//            ): MediatorResult {
-//                Log.d(
-//                    "blood",
-//                    "remoteMediator load: $loadType ${state.anchorPosition} ${state.pages.size}"
-//                )
-//                return MediatorResult.Success(false)
-//            }
-//        },
         pagingSourceFactory = {
             object : PagingSource<Int, DataX>() {
                 override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DataX> {
@@ -45,7 +35,7 @@ class PagingViewModel : ViewModel() {
                         val prevKey = if (pagerNum <= 0) null else pagerNum - 1
                         val expectNextKey = pagerNum + 1
                         val nextKey = if (expectNextKey > 3) null else expectNextKey
-                        Log.d("blood", "PagingSource load: $pagerNum")
+                        Log.d("blood", "PagingSource load: $pagerNum ${result.data.datas.size}")
                         LoadResult.Page(
                             result.data.datas,
                             prevKey,
@@ -66,7 +56,6 @@ class PagingViewModel : ViewModel() {
     /**
      *
 
-
     D/blood: log: refresh NotLoading
     D/blood: log: append NotLoading
 
@@ -86,8 +75,77 @@ class PagingViewModel : ViewModel() {
     D/OkHttp: <-- 200 OK https://www.wanandroid.com/article/list/1/json (537ms, unknown-length body)
     D/blood: log: append NotLoading
 
-
      *
      */
+
+    private var lastRequestedPage = 0
+    private val database = AppDatabase.getInstance()
+    private val articleDao = AppDatabase.getInstance().articleDao
+
+    @OptIn(ExperimentalPagingApi::class)
+    fun getPagerByRemote() = Pager(
+        PagingConfig(
+            pageSize = PAGE_SIZE,
+            prefetchDistance = 5,
+            enablePlaceholders = false,
+            initialLoadSize = PAGE_SIZE
+        ),
+        initialKey = 0,
+        remoteMediator = object : RemoteMediator<Int, DataX>() {
+            override suspend fun load(
+                loadType: LoadType,
+                state: PagingState<Int, DataX>
+            ): MediatorResult {
+                return try {
+
+                    Log.d("blood", "remote load: $loadType ${state.lastItemOrNull()}")
+
+                    val lastData = state.lastItemOrNull()
+
+                    val pageKey = when (loadType) {
+                        LoadType.REFRESH -> {
+                            null
+                        }
+                        LoadType.PREPEND -> {
+                            return MediatorResult.Success(endOfPaginationReached = false)
+                        }
+                        LoadType.APPEND -> {
+                            if (lastData == null) {
+                                return MediatorResult.Success(endOfPaginationReached = true)
+                            }
+                            lastData.page
+                        }
+                    }
+
+                    val page = pageKey ?: 0
+                    val result = netApi.load(page)
+                    val articles = result.data.datas
+                    val endOfPaginationReached = articles.isEmpty() || lastRequestedPage > 3
+
+                    val items = articles.map {
+                        it.page++
+                        it
+                    }
+
+                    database.withTransaction {
+                        if (loadType == LoadType.REFRESH) {
+                            articleDao.deleteArticles()
+                        }
+                        articleDao.insertArticles(items)
+                    }
+
+                    MediatorResult.Success(endOfPaginationReached)
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    MediatorResult.Error(e)
+                }
+            }
+        },
+        pagingSourceFactory = {
+            Log.d("blood", "PagingSource load: $lastRequestedPage")
+            articleDao.queryArticles(lastRequestedPage * PAGE_SIZE, PAGE_SIZE)
+        }
+    ).flow
 
 }
