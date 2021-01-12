@@ -28,14 +28,14 @@ class PagingViewModel : ViewModel() {
         pagingSourceFactory = {
             object : PagingSource<Int, DataX>() {
                 override suspend fun load(params: LoadParams<Int>): LoadResult<Int, DataX> {
-                    Log.d("blood", "PagingSource load thread : ${Thread.currentThread().name}")
+                    Log.d("bloodsoul", "PagingSource load thread : ${Thread.currentThread().name}")
                     return try {
                         val pagerNum = params.key ?: 0
                         val result = netApi.load(pagerNum)
                         val prevKey = if (pagerNum <= 0) null else pagerNum - 1
                         val expectNextKey = pagerNum + 1
                         val nextKey = if (expectNextKey > 3) null else expectNextKey
-                        Log.d("blood", "PagingSource load: $pagerNum ${result.data.datas.size}")
+                        Log.d("bloodsoul", "PagingSource load: $pagerNum ${result.data.datas.size}")
                         LoadResult.Page(
                             result.data.datas,
                             prevKey,
@@ -78,7 +78,6 @@ class PagingViewModel : ViewModel() {
      *
      */
 
-    private var lastRequestedPage = 0
     private val database = AppDatabase.getInstance()
     private val articleDao = AppDatabase.getInstance().articleDao
 
@@ -98,7 +97,7 @@ class PagingViewModel : ViewModel() {
             ): MediatorResult {
                 return try {
 
-                    Log.d("blood", "remote load: $loadType ${state.lastItemOrNull()}")
+                    Log.d("bloodsoul", "remote loadType: $loadType")
 
                     val lastData = state.lastItemOrNull()
 
@@ -107,25 +106,29 @@ class PagingViewModel : ViewModel() {
                             null
                         }
                         LoadType.PREPEND -> {
-                            return MediatorResult.Success(endOfPaginationReached = false)
+                            return MediatorResult.Success(endOfPaginationReached = true)
                         }
                         LoadType.APPEND -> {
                             if (lastData == null) {
                                 return MediatorResult.Success(endOfPaginationReached = true)
                             }
-                            lastData.page
+                            lastData.page + 1
                         }
                     }
+
+                    Log.d("bloodsoul", "remote pageKey: $pageKey")
 
                     val page = pageKey ?: 0
                     val result = netApi.load(page)
                     val articles = result.data.datas
-                    val endOfPaginationReached = articles.isEmpty() || lastRequestedPage > 3
+                    val endOfPaginationReached = articles.isEmpty()
 
                     val items = articles.map {
-                        it.page++
+                        it.page = page
                         it
                     }
+
+                    Log.d("bloodsoul", "remote map: ${items.lastOrNull()}")
 
                     database.withTransaction {
                         if (loadType == LoadType.REFRESH) {
@@ -143,8 +146,8 @@ class PagingViewModel : ViewModel() {
             }
         },
         pagingSourceFactory = {
-            Log.d("blood", "PagingSource load: $lastRequestedPage")
-            articleDao.queryArticles(lastRequestedPage * PAGE_SIZE, PAGE_SIZE)
+            Log.d("bloodsoul", "PagingSource load")
+            articleDao.queryArticles()
         }
     ).flow
 

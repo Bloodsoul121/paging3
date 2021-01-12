@@ -38,11 +38,11 @@ class Paging3Activity : AppCompatActivity() {
 //                is LoadState.NotLoading -> log("refresh NotLoading")
 //                is LoadState.Error -> log("refresh Error")
 //            }
-            when (it.append) {
-                is LoadState.Loading -> log("append Loading")
-                is LoadState.NotLoading -> log("append NotLoading")
-                is LoadState.Error -> log("append Error")
-            }
+//            when (it.append) {
+//                is LoadState.Loading -> log("append Loading")
+//                is LoadState.NotLoading -> log("append NotLoading")
+//                is LoadState.Error -> log("append Error")
+//            }
         }
 
         val viewModel = ViewModelProvider(this).get(PagingViewModel::class.java)
@@ -62,16 +62,16 @@ class Paging3Activity : AppCompatActivity() {
             }
         }
 
-        lifecycleScope.launch {
-            adapter.loadStateFlow
-                .distinctUntilChangedBy { it.refresh }
-                .filter { it.refresh is LoadState.NotLoading }
-                .collect { binding.rv.scrollToPosition(0) }
-        }
+//        lifecycleScope.launch {
+//            adapter.loadStateFlow
+//                .distinctUntilChangedBy { it.refresh }
+//                .filter { it.refresh is LoadState.NotLoading }
+//                .collect { binding.rv.scrollToPosition(0) }
+//        }
     }
 
     private fun log(msg: String) {
-        Log.d("blood", "log: $msg")
+        Log.d("bloodsoul", "log: $msg")
     }
 
 }

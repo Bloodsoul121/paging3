@@ -28,4 +28,7 @@ public interface ArticleDao {
     @Query("SELECT * FROM articles ORDER BY shareDate ASC limit :num offset :offset")
     PagingSource<Integer, DataX> queryArticles(int offset, int num);
 
+    @Query("SELECT * FROM articles")
+    PagingSource<Integer, DataX> queryArticles();
+
 }

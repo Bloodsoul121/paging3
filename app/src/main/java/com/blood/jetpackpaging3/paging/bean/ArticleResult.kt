@@ -1,6 +1,7 @@
 package com.blood.jetpackpaging3.paging.bean
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 data class ArticleResult(
@@ -19,8 +20,10 @@ data class Data(
     val total: Int
 )
 
-@Entity(tableName = "articles")
+@Entity(tableName = "articles"/*, indices = [Index("id", unique = true)]*/)
 data class DataX(
+    @PrimaryKey(autoGenerate = true)
+    val db_id: Int,
     val apkLink: String,
     val audit: Int,
     val author: String,
@@ -34,7 +37,7 @@ data class DataX(
     val envelopePic: String,
     val fresh: Boolean,
     val host: String,
-    @PrimaryKey val id: Int,
+    val id: Int,
     val link: String,
     val niceDate: String,
     val niceShareDate: String,
@@ -55,7 +58,7 @@ data class DataX(
     val visible: Int,
     val zan: Int,
     // 添加一个分页属性
-    var page:Int = 0
+    var page: Int = 0
 )
 
 data class Tag(
